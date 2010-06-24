@@ -174,16 +174,22 @@ module Indexer
 
       model_name, column_names, options = matches[2], matches[7], matches[8]
       
-      # if the finder class is "self" or empty (can be a simple "find()" in a model)
-      if model_name == "self" || model_name.blank?
-        model_name = File.basename(file_name).sub(/\.rb$/,'').camelize
-        table_name = model_name.constantize.table_name            
-      else
-        if model_name.respond_to?(:constantize)
-          if model_name.constantize.respond_to?(:table_name)             
+      begin
+        # if the finder class is "self" or empty (can be a simple "find()" in a model)
+        if model_name == "self" || model_name.blank?
+          model_name = File.basename(file_name).sub(/\.rb$/,'').camelize
+          if model_name.constantize.respond_to?(:table_name)
             table_name = model_name.constantize.table_name
           end
+        else
+          if model_name.respond_to?(:constantize)
+            if model_name.constantize.respond_to?(:table_name)
+              table_name = model_name.constantize.table_name
+            end
+          end
         end
+      rescue Exception => e
+          puts "Error with file #{file_name} on line #{line} #{e}"
       end
       
       # Check that all prerequisites are met
