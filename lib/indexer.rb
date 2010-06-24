@@ -230,11 +230,11 @@ module Indexer
           next if key.blank?
           if key.is_a?(Array)
             keys = key.collect {|k| ":#{k}"}
-            add << "add_index :#{table_name}, [#{keys.join(', ')}]"
-            remove << "remove_index :#{table_name}, :column => [#{keys.join(', ')}]"
+            add << "#{table_name}, [#{keys.join(', ')}]"
+            remove << "#{table_name}, :column => [#{keys.join(', ')}]"
           else
-            add << "add_index :#{table_name}, :#{key}"
-            remove << "remove_index :#{table_name}, :#{key}"
+            add << "#{table_name}, :#{key}"
+            remove << "#{table_name}, :#{key}"
           end
           
         end
@@ -255,11 +255,11 @@ class AddMissingIndexes < ActiveRecord::Migration
     # http://guides.rubyonrails.org
 
     
-    #{add.uniq.join("\n    ")}
+    add_index :#{add.uniq.sort.join("\n    add_index :")}
   end
-  
+
   def self.down
-    #{remove.uniq.join("\n    ")}
+    remove_index :#{remove.uniq.sort.join("\n    remove_index :")}
   end
 end
 EOM
@@ -288,11 +288,11 @@ EOM
             next if key.blank?
             if key.is_a?(Array)
               keys = key.collect {|k| ":#{k}"}
-              add << "add_index :#{table_name}, [#{keys.join(', ')}]"
-              remove << "remove_index :#{table_name}, :column => [#{keys.join(', ')}]"
+              add << "#{table_name}, [#{keys.join(', ')}]"
+              remove << "#{table_name}, :column => [#{keys.join(', ')}]"
             else
-              add << "add_index :#{table_name}, :#{key}"
-              remove << "remove_index :#{table_name}, :#{key}"
+              add << "#{table_name}, :#{key}"
+              remove << "#{table_name}, :#{key}"
             end
           
           end
@@ -312,11 +312,11 @@ class AddFindsMissingIndexes < ActiveRecord::Migration
     # http://www.railstutor.org
     # http://guides.rubyonrails.org
   
-    #{add.uniq.join("\n    ")}
+    add_index :#{add.uniq.sort.join("\n    add_index :")}
   end
 
   def self.down
-    #{remove.uniq.join("\n    ")}
+    remove_index :#{remove.uniq.sort.join("\n    remove_index :")}
   end
 end
 EOM
