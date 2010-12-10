@@ -16,8 +16,8 @@ module Indexer
     model_names.each do |model_name|
       class_name = model_name.sub(/\.rb$/,'').camelize
       begin
-        klass = class_name.split('::').inject(Object){ |klass,part| klass.const_get(part) }
-        if klass < ActiveRecord::Base && !klass.abstract_class?
+        klass = class_name.split('::').inject(Object){ |klass,part| klass.const_get(part) if klass.const_defined?(part) }
+        if klass && klass < ActiveRecord::Base && !klass.abstract_class?
           model_classes << klass
         end
       rescue
