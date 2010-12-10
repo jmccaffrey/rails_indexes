@@ -126,6 +126,7 @@ module Indexer
             @missing_indexes[table_name] = keys_to_add unless keys_to_add.empty?
           else
             puts "BUG: table '#{table_name.to_s}' does not exist, please report this bug."
+            @indexes_required.delete(table_name)
           end
         rescue Exception => e
           puts "ERROR: #{e}"
