@@ -110,27 +110,6 @@ module Indexer
 
       # Scan each line
       current_file.each do |line|
-        
-        # by default, try to add index on primary key, based on file name
-        # this will fail if the file isnot a model file
-        
-        begin
-          current_model_name = File.basename(file_name).sub(/\.rb$/,'').camelize
-        rescue
-          # NO-OP
-        end
-        
-        # Get the model class
-        klass = current_model_name.split('::').inject(Object){ |klass,part| klass.const_get(part) } rescue nil
-        
-        # Only add primary key for active record dependent classes and non abstract ones too.
-        if klass.present? && klass < ActiveRecord::Base && !klass.abstract_class?
-          current_model = current_model_name.constantize
-          primary_key = current_model.primary_key
-          table_name = current_model.table_name
-          @indexes_required[table_name] += [primary_key] unless @indexes_required[table_name].include?(primary_key)
-        end
-        
         check_line_for_find_indexes(file_name, line)
         
       end
@@ -194,8 +173,8 @@ module Indexer
       
       # Check that all prerequisites are met
       if model_name.present? && table_name.present?
-        primary_key = model_name.constantize.primary_key
-        @indexes_required[table_name] += [primary_key] unless @indexes_required[table_name].include?(primary_key)
+#        primary_key = model_name.constantize.primary_key
+#        @indexes_required[table_name] += [primary_key] unless @indexes_required[table_name].include?(primary_key)
   
         if column_names.present?
           column_names = column_names.split('_and_')
